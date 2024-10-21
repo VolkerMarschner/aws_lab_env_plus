@@ -225,6 +225,7 @@ resource "aws_instance" "linux" {
   tags = {
     Name = "${var.prefix}-WL-Linux-${count.index + 1}"
   }
+}
 
 # Windows EC2 instances
 resource "aws_instance" "windows" {
