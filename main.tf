@@ -155,14 +155,89 @@ resource "aws_security_group" "${var.prefix}-Workload-SG" {
   }
 }
 
--------MARKER ---------
 
 # Create SSH Keys and Passwords
 ##################################
 
+# Create SSH key for JH (Jump Host)
+resource "tls_private_key" "jh_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "aws_key_pair" "jh_key_pair" {
+  key_name   = "${var.prefix}-JH"
+  public_key = tls_private_key.jh_key.public_key_openssh
+}
+
+# Create SSH key for WL (Workload)
+resource "tls_private_key" "wl_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "aws_key_pair" "wl_key_pair" {
+  key_name   = "${var.prefix}-WL"
+  public_key = tls_private_key.wl_key.public_key_openssh
+}
+
+# Save private keys to local files
+resource "local_file" "jh_private_key" {
+  content  = tls_private_key.jh_key.private_key_pem
+  filename = "${path.module}/${var.prefix}-JH-private-key.pem"
+}
+
+resource "local_file" "wl_private_key" {
+  content  = tls_private_key.wl_key.private_key_pem
+  filename = "${path.module}/${var.prefix}-WL-private-key.pem"
+}
+
+
+
+
 # Create EC2 Instances
 ##########################
 
+# create Jumphost
+# create  Jumphost EC2 instances
+resource "aws_instance" "linux" {
+  count                  = 1
+  ami                    = var.linux_ami
+  instance_type          = var.instance_type
+  vpc_security_group_ids = ${var.prefix}-Jumphost-SG
+  key_name               = var.jh_key
+  subnet_id              = var.public
+
+  tags = {
+    Name = "${var.prefix}-Jumphost"
+  }
+
+
+# create  WorkloadLinux EC2 instances
+resource "aws_instance" "linux" {
+  count                  = var.linux_instance_count
+  ami                    = var.linux_ami
+  instance_type          = var.instance_type
+  vpc_security_group_ids = ${var.prefix}-Workload-SG
+  key_name               = var.wl_key
+  subnet_id              = var.private
+
+  tags = {
+    Name = "${var.prefix}-WL-Linux-${count.index + 1}"
+  }
+
+# Windows EC2 instances
+resource "aws_instance" "windows" {
+  count                  = var.windows_instance_count
+  ami                    = var.windows_ami
+  instance_type          = var.instance_type
+  vpc_security_group_ids = ${var.prefix}-Workload-SG
+  key_name               = var.key_name
+  subnet_id              = var.private
+
+  tags = {
+    Name = "${var.prefix}-WL-Windows-${count.index + 1}"
+  }
 
 
 
@@ -205,4 +280,39 @@ resource "local_file" "outputs" {
     Internet Gateway ID: ${aws_internet_gateway.main.id}
   EOT
   filename = "${path.module}/vpc_outputs.txt"
+
+# Output EC2 Instances
+##############################
+
+
+output "linux_instance_ids" {
+  description = "IDs of created Linux EC2 instances"
+  value       = aws_instance.linux[*].id
+}
+
+output "linux_public_ips" {
+  description = "Public IPs of created Linux EC2 instances"
+  value       = aws_instance.linux[*].public_ip
+}
+
+output "windows_instance_ids" {
+  description = "IDs of created Windows EC2 instances"
+  value       = aws_instance.windows[*].id
+}
+
+output "windows_public_ips" {
+  description = "Public IPs of created Windows EC2 instances"
+  value       = aws_instance.windows[*].public_ip
+}
+
+# Write outputs to a file
+resource "local_file" "outputs" {
+  content = <<-EOT
+    Linux Instance IDs: ${jsonencode(aws_instance.linux[*].id)}
+    Linux Public IPs: ${jsonencode(aws_instance.linux[*].public_ip)}
+    Windows Instance IDs: ${jsonencode(aws_instance.windows[*].id)}
+    Windows Public IPs: ${jsonencode(aws_instance.windows[*].public_ip)}
+  EOT
+  filename = "${path.module}/ec2_outputs.txt"
+}
 }
