@@ -104,8 +104,8 @@ resource "aws_route_table_association" "private" {
 ###################################
 
 # Security group for Jumphost instance
-resource "aws_security_group" "${var.prefix}-Jumphost-SG" {
-  name        = "allow_ssh"
+resource "aws_security_group" "Jumphost-SG" {
+  name        = "${var.prefix}-Jumphost-SG"
   description = "Allow SSH inbound traffic"
   vpc_id      = var.vpc_id
 
@@ -130,8 +130,8 @@ resource "aws_security_group" "${var.prefix}-Jumphost-SG" {
 }
 
 # Security group for Workload instances
-resource "aws_security_group" "${var.prefix}-Workload-SG" {
-  name        = "allow_ssh"
+resource "aws_security_group" "workload-sg" {
+  name        = "${var.prefix}-Workload-SG"
   description = "Allow SSH inbound traffic"
   vpc_id      = var.vpc_id
 
@@ -204,7 +204,7 @@ resource "aws_instance" "linux" {
   count                  = 1
   ami                    = var.linux_ami
   instance_type          = var.instance_type
-  vpc_security_group_ids = ${var.prefix}-Jumphost-SG
+  vpc_security_group_ids = var.Jumphost-SG
   key_name               = var.jh_key
   subnet_id              = var.public
 
@@ -218,7 +218,7 @@ resource "aws_instance" "linux" {
   count                  = var.linux_instance_count
   ami                    = var.linux_ami
   instance_type          = var.instance_type
-  vpc_security_group_ids = ${var.prefix}-Workload-SG
+  vpc_security_group_ids = var.Workload-SG
   key_name               = var.wl_key
   subnet_id              = var.private
 
@@ -231,7 +231,7 @@ resource "aws_instance" "windows" {
   count                  = var.windows_instance_count
   ami                    = var.windows_ami
   instance_type          = var.instance_type
-  vpc_security_group_ids = ${var.prefix}-Workload-SG
+  vpc_security_group_ids = var.Workload-SG
   key_name               = var.key_name
   subnet_id              = var.private
 
