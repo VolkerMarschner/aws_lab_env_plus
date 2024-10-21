@@ -30,7 +30,7 @@ resource "aws_subnet" "private" {
   availability_zone = "${var.region}b"
 
   tags = {
-    Name = "${var.vpc_name}-private-subnet"
+    Name = "private-subnet"
   }
 }
 
@@ -238,7 +238,7 @@ resource "aws_instance" "windows" {
   tags = {
     Name = "${var.prefix}-WL-Windows-${count.index + 1}"
   }
-
+}
 
 
 #############################
