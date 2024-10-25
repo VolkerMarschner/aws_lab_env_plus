@@ -31,7 +31,7 @@ variable "private_subnet_cidr" {
 
 variable "vpc_name" {
   description = "Name tag for the VPC"
-  
+  default     = "VPC"
 }
 
 # SG related Variables maybe noot needed?
@@ -75,3 +75,11 @@ variable "windows_ami" {
   default     = "ami-0d41eb8a7cf28d03b"  # Windows Server 2022 Base in eu-central-1, update as needed
 }
 
+variable "jh_public_key" {
+  description = "Public key material for jumphost SSH key"
+  type        = string
+}
+variable "wl_public_key" {
+  description = "Public key material for workload SSH key"
+  type        = string
+}
