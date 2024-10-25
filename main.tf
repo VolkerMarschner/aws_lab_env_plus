@@ -1,5 +1,5 @@
 #########################
-#  create VPC123
+#  create VPC
 #################################
 
 resource "aws_vpc" "main" {
@@ -8,7 +8,7 @@ resource "aws_vpc" "main" {
   enable_dns_support   = true
 
   tags = {
-    Name = var.vpc_name
+    Name = "${var.prefix}-VPC"
   }
 }
 
@@ -201,7 +201,7 @@ resource "local_file" "wl_private_key" {
 
 # create Jumphost
 # create  Jumphost EC2 instances
-resource "aws_instance" "linux" {
+resource "aws_instance" "jh-linux" {
   count                  = 1
   ami                    = var.linux_ami
   instance_type          = var.instance_type
@@ -273,7 +273,7 @@ output "internet_gateway_id" {
 }
 
 # Write outputs to a file
-resource "local_file" "outputs" {
+resource "local_file" "vpc-data" {
   content = <<-EOT
     VPC ID: ${aws_vpc.main.id}
     Public Subnet ID: ${aws_subnet.public.id}
@@ -281,7 +281,7 @@ resource "local_file" "outputs" {
     NAT Gateway ID: ${aws_nat_gateway.main.id}
     Internet Gateway ID: ${aws_internet_gateway.main.id}
   EOT
-  filename = "${path.module}/vpc_outputs.txt"
+  filename = "${path.module}/vpc_data.txt"
 }
 
 # Output EC2 Instances
@@ -309,13 +309,13 @@ output "windows_public_ips" {
 }
 
 # Write outputs to a file
-resource "local_file" "outputs" {
+resource "local_file" "ec2-instance-data" {
   content = <<-EOT
     Linux Instance IDs: ${jsonencode(aws_instance.linux[*].id)}
     Linux Public IPs: ${jsonencode(aws_instance.linux[*].public_ip)}
     Windows Instance IDs: ${jsonencode(aws_instance.windows[*].id)}
     Windows Public IPs: ${jsonencode(aws_instance.windows[*].public_ip)}
   EOT
-  filename = "${path.module}/ec2_outputs.txt"
+  filename = "${path.module}/ec2-instance-data.txt"
 }
 

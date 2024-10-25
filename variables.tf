@@ -31,7 +31,7 @@ variable "private_subnet_cidr" {
 
 variable "vpc_name" {
   description = "Name tag for the VPC"
-  default     = "${var.prefix}-VPC"
+  
 }
 
 # SG related Variables maybe noot needed?
