@@ -108,7 +108,7 @@ resource "aws_route_table_association" "private" {
 resource "aws_security_group" "Jumphost-SG" {
   name        = "${var.prefix}-Jumphost-SG"
   description = "Allow SSH inbound traffic"
-  vpc_id      = var.vpc_id
+  vpc_id      = var.vpc_name
 
   ingress {
     description = "SSH from anywhere"
@@ -134,7 +134,7 @@ resource "aws_security_group" "Jumphost-SG" {
 resource "aws_security_group" "workload-sg" {
   name        = "${var.prefix}-Workload-SG"
   description = "Allow SSH inbound traffic"
-  vpc_id      = var.vpc_id
+  vpc_id      = var.vpc_name
 
   ingress {
     description = "Allow Any"
@@ -205,23 +205,23 @@ resource "aws_instance" "linux" {
   count                  = 1
   ami                    = var.linux_ami
   instance_type          = var.instance_type
-  vpc_security_group_ids = var.Jumphost-SG
-  key_name               = var.jh_key
-  subnet_id              = var.public
+  vpc_security_group_ids = [aws_security_group.Jumphost-SG.id]
+  key_name               = aws_key_pair.jumphost_key.key_name
+  subnet_id              = aws_subnet.public.id
 
   tags = {
     Name = "${var.prefix}-Jumphost"
   }
-
+}
 
 # create  WorkloadLinux EC2 instances
 resource "aws_instance" "linux" {
   count                  = var.linux_instance_count
   ami                    = var.linux_ami
   instance_type          = var.instance_type
-  vpc_security_group_ids = var.Workload-SG
-  key_name               = var.wl_key
-  subnet_id              = var.private
+  vpc_security_group_ids = [aws_security_group.workload-sg.id]
+  key_name               = aws_key_pair.wl_key.key_name
+  subnet_id              = aws_subnet.private.id
 
   tags = {
     Name = "${var.prefix}-WL-Linux-${count.index + 1}"
@@ -233,9 +233,9 @@ resource "aws_instance" "windows" {
   count                  = var.windows_instance_count
   ami                    = var.windows_ami
   instance_type          = var.instance_type
-  vpc_security_group_ids = var.Workload-SG
-  key_name               = var.key_name
-  subnet_id              = var.private
+  vpc_security_group_ids = [aws_security_group.workload-sg.id]
+  key_name               = aws_key_pair.wl_key.key_name
+  subnet_id              = aws_subnet.private.id
 
   tags = {
     Name = "${var.prefix}-WL-Windows-${count.index + 1}"
@@ -282,6 +282,7 @@ resource "local_file" "outputs" {
     Internet Gateway ID: ${aws_internet_gateway.main.id}
   EOT
   filename = "${path.module}/vpc_outputs.txt"
+}
 
 # Output EC2 Instances
 ##############################
@@ -317,4 +318,4 @@ resource "local_file" "outputs" {
   EOT
   filename = "${path.module}/ec2_outputs.txt"
 }
-}
+
