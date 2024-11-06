@@ -194,6 +194,28 @@ resource "local_file" "wl_private_key" {
   filename = "${path.module}/${var.prefix}-WL-private-key.pem"
 }
 
+# Fetch AMI Information
+##########################
+
+data "aws_ami" "windows" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["Windows_Server-2022-English-Full-Base-*"]
+  }
+}
+
+data "aws_ami" "ubuntu" {
+  most_recent = true
+  owners      = ["099720109477"] # Canonical's AWS account ID
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+}
 
 
 
@@ -204,7 +226,7 @@ resource "local_file" "wl_private_key" {
 # create  Jumphost EC2 instances
 resource "aws_instance" "jh-linux" {
   count                  = 1
-  ami                    = var.linux_ami
+  ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.instance_type
   vpc_security_group_ids = [aws_security_group.Jumphost-SG.id]
   key_name               = aws_key_pair.jh_key_pair.key_name
@@ -218,7 +240,7 @@ resource "aws_instance" "jh-linux" {
 # create  WorkloadLinux EC2 instances
 resource "aws_instance" "linux" {
   count                  = var.linux_instance_count
-  ami                    = var.linux_ami
+  ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.instance_type
   vpc_security_group_ids = [aws_security_group.workload-sg.id]
   key_name               = aws_key_pair.wl_key_pair.key_name
@@ -232,7 +254,7 @@ resource "aws_instance" "linux" {
 # Windows EC2 instances
 resource "aws_instance" "windows" {
   count                  = var.windows_instance_count
-  ami                    = var.windows_ami
+  ami                    = data.aws_ami.windows.id
   instance_type          = var.instance_type
   vpc_security_group_ids = [aws_security_group.workload-sg.id]
   key_name               = aws_key_pair.wl_key_pair.key_name
