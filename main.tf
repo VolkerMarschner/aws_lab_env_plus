@@ -310,15 +310,29 @@ resource "local_file" "vpc-data" {
 # Output EC2 Instances
 ##############################
 
+output "linux_jh_instance_ids" {
+  description = "IDs of created Linux-JH EC2 instances"
+  value       = aws_instance.jh-linux[*].id
+}
 
 output "linux_instance_ids" {
   description = "IDs of created Linux EC2 instances"
   value       = aws_instance.linux[*].id
 }
 
-output "linux_public_ips" {
-  description = "Public IPs of created Linux EC2 instances"
-  value       = aws_instance.linux[*].public_ip
+output "linux-jh_public_ips" {
+  description = "Public IPs of created Linux-JH EC2 instances"
+  value       = aws_instance.jh-linux[*].public_ip
+}
+
+output "jumphost_public_dns" {
+  description = "Public DNS hostname of the Jumphost instance"
+  value       = aws_instance.jh-linux[0].public_dns
+}
+
+output "linux_private_ips" {
+  description = "Private IPs of created Linux EC2 instances"
+  value       = aws_instance.linux[*].private_ip
 }
 
 output "windows_instance_ids" {
@@ -326,17 +340,22 @@ output "windows_instance_ids" {
   value       = aws_instance.windows[*].id
 }
 
-output "windows_public_ips" {
-  description = "Public IPs of created Windows EC2 instances"
-  value       = aws_instance.windows[*].public_ip
+output "windows_private_ips" {
+  description = "Private IPs of created Windows EC2 instances"
+  value       = aws_instance.windows[*].private_ip
 }
 
 # Write outputs to a file
 resource "local_file" "ec2-instance-data" {
   content = <<-EOT
-    Linux Instance IDs: ${jsonencode(aws_instance.linux[*].id)}
-    Linux Public IPs: ${jsonencode(aws_instance.linux[*].public_ip)}
+    Linux-JH Instance IDs: ${jsonencode(aws_instance.jh-linux[*].id)}
+    Linux-WL Instance IDs: ${jsonencode(aws_instance.linux[*].id)}
     Windows Instance IDs: ${jsonencode(aws_instance.windows[*].id)}
+
+    Jumphost Public DNS: ${aws_instance.jh-linux[0].public_dns}
+    Jumphost Public IPs: ${jsonencode(aws_instance.jh-linux[*].public_ip)}
+
+    Linux-WL Private IPs: ${jsonencode(aws_instance.linux[*].private_ip)}
     Windows Public IPs: ${jsonencode(aws_instance.windows[*].public_ip)}
   EOT
   filename = "${path.module}/ec2-instance-data.txt"
