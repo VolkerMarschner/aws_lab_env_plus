@@ -221,7 +221,7 @@ resource "aws_instance" "linux" {
   ami                    = var.linux_ami
   instance_type          = var.instance_type
   vpc_security_group_ids = [aws_security_group.workload-sg.id]
-  key_name               = aws_key_pair.wl_key.key_name
+  key_name               = aws_key_pair.wl_key_pair.key_name
   subnet_id              = aws_subnet.private.id
 
   tags = {
@@ -235,7 +235,7 @@ resource "aws_instance" "windows" {
   ami                    = var.windows_ami
   instance_type          = var.instance_type
   vpc_security_group_ids = [aws_security_group.workload-sg.id]
-  key_name               = aws_key_pair.wl_key.key_name
+  key_name               = aws_key_pair.wl_key_pair.key_name
   subnet_id              = aws_subnet.private.id
 
   tags = {
