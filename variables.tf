@@ -65,15 +65,15 @@ variable "instance_type" {
   default     = "t2.micro"
 }
 
-variable "linux_ami" {
-  description = "AMI ID for Ubuntu Linux"
-  default     = "ami-0ec7f9846da6b0f61"  # Ubuntu 22.04 LTS in eu-central-1, update as needed
-}
+#variable "linux_ami" {
+#  description = "AMI ID for Ubuntu Linux"
+#  default     = "ami-0ec7f9846da6b0f61"  # Ubuntu 22.04 LTS in eu-central-1, update as needed
+#}
 
-variable "windows_ami" {
-  description = "AMI ID for Windows Server"
-  default     = "ami-0d41eb8a7cf28d03b"  # Windows Server 2022 Base in eu-central-1, update as needed
-}
+#variable "windows_ami" {
+#  description = "AMI ID for Windows Server"
+#  default     = "ami-0d41eb8a7cf28d03b"  # Windows Server 2022 Base in eu-central-1, update as needed
+#}
 
 # delete this block
 #variable "jh_public_key" {
