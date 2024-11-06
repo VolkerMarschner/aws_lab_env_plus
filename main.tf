@@ -207,7 +207,7 @@ resource "aws_instance" "jh-linux" {
   ami                    = var.linux_ami
   instance_type          = var.instance_type
   vpc_security_group_ids = [aws_security_group.Jumphost-SG.id]
-  key_name               = aws_key_pair.jh_key.key_name
+  key_name               = aws_key_pair.jh_key_pair.key_name
   subnet_id              = aws_subnet.public.id
 
   tags = {
