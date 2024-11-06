@@ -109,7 +109,7 @@ resource "aws_route_table_association" "private" {
 resource "aws_security_group" "Jumphost-SG" {
   name        = "${var.prefix}-Jumphost-SG"
   description = "Allow SSH inbound traffic"
-  vpc_id      = var.vpc_name
+  vpc_id      = aws_vpc.main.id
 
   ingress {
     description = "SSH from anywhere"
@@ -135,7 +135,7 @@ resource "aws_security_group" "Jumphost-SG" {
 resource "aws_security_group" "workload-sg" {
   name        = "${var.prefix}-Workload-SG"
   description = "Allow SSH inbound traffic"
-  vpc_id      = var.vpc_name
+  vpc_id      = aws_vpc.main.id
 
   ingress {
     description = "Allow Any"
