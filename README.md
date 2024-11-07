@@ -24,7 +24,7 @@ This Terraform script will create a dedicated Lab environment in your AWS Accoun
 ```
   cd aws_lab_env
 ```
-- edit the file varialbles.tf and adjust values according to your needs. At minimum you should edit the variable "prefix", which controls the naming of newly created ressources.
+- edit the file variables.tf and adjust values according to your needs. At minimum you should edit the variable "prefix", which controls the naming of newly created ressources.
  
 - Let Terraform do its magic by issuing the following commands
 ```
