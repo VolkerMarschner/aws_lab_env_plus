@@ -32,7 +32,7 @@ This Terraform script will create a dedicated Lab environment in your AWS Accoun
  terraform plan
  terraform apply
 ```
-## After a successful run, you will find information about IPs, DNS Names, private SSH keys etc. in the same directory
+- After a successful run, you will find information about IPs, DNS Names, private SSH keys etc. in the same directory
 
 ## Once you do no longer need the environment, simply do a
 ```
