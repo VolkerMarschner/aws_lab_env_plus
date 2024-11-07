@@ -20,3 +20,21 @@ This Terraform script will create a dedicated Lab environment in your AWS Accoun
   ```
   git clone https://github.com/VolkerMarschner/aws_lab_env.git
   ```
+- cd into directory aws_lab_env
+  ```
+  cd aws_lab_env
+  ```
+  - edit the file varialbles.tf and adjust values according to your needs. At minimum you should edit the variable "prefix", which controls the naming of newly created ressources.
+ 
+  - Let Terraform do its magic by
+  ```
+ terraform init
+ terraform plan
+ terraform apply
+  ```
+## After a successful run, you will find information about IPs, DNS Names, private SSH keys etc. in the same directory
+
+## Once you do no longer need the environment, simply do a
+  ```
+  terraform destroy
+  ```
