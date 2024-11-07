@@ -1,4 +1,4 @@
-# Script to create a Lab environment in AWS automatically
+# Script to create a Lab environment + an EKS Cluster in AWS automatically
 
 ## What is it?
 This Terraform script will create a dedicated Lab environment in your AWS Account that consists of:
@@ -6,6 +6,7 @@ This Terraform script will create a dedicated Lab environment in your AWS Accoun
 - Internet connectivity for all elements, for private subnet via NAT GW
 - an internet facing (Linux) Jumphost
 - a (defined by variables) Number of Linux (Ubuntu) and Windows Instances
+- a minimum size AWS EKS Cluster
 
 ## How does it work?
 
@@ -18,11 +19,11 @@ This Terraform script will create a dedicated Lab environment in your AWS Accoun
 
 - pull the repo
 ```
-  git clone https://github.com/VolkerMarschner/aws_lab_env.git
+  git clone https://github.com/VolkerMarschner/aws_lab_env_plus.git
 ```
-- cd into directory aws_lab_env
+- cd into directory aws_lab_env_plus
 ```
-  cd aws_lab_env
+  cd aws_lab_env_plus
 ```
 - edit the file variables.tf and adjust values according to your needs. At minimum you should edit the variable "prefix", which controls the naming of newly created ressources.
  
